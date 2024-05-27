@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg navbar-dark verdeSena">
+    <div class="container-fluid">
+        <div class="dropdown">
+            <a class="navbar-brand dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                {% if user.userFoto != "" %}
+                    <img src="/media/{{user.userFoto}}" alt="Foto Usuario" style="width:40px;" class="rounded-pill"> 
+                {% else %}  
+                    <img src="/media/user-logo.png" alt="No foto" style="width:40px;" class="rounded-pill">
+                {% endif %}
+            </a>
+            <ul class="dropdown-menu" style="width:300px">
+                <li><span class="dropdown-item fw-bold"></span>{{user.first_name}} {{user.last_name}}</li>
+                <li class="dropdown-item" style="margin-right: 20px; margin-top:2px">
+                    <select id="cbRolMenu" name="cbRolMenu" class="form-select">
+                        <option value="Administrador">Administrador</option>
+                        <option value="Administrador">Técnico</option>
+                        <option value="Administrador">Empleado</option>
+                    </select>
+                </li>
+                <li><a class="dropdown-item" href="/vistaGestionarCuenta/">Gestionar Tú Cuenta</a></li>
+                <li><a class="dropdown-item" href="/salir/">Salir</a></li>
+            </ul>
+        </div>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/inicioEmpleado/">Inicio</a>
+                </li>               
+                <li class="nav-item">
+                    <a class="nav-link" href="/vistaSolicitud/">Gestionar Solicitudes</a>
+                </li>                
+            </ul>
+        </div>
+    </div>
+</nav>

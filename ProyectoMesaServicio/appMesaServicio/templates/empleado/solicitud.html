@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{%endblock %}
+{% block menu %}
+{% include "empleado/menu.html" %}
+{%endblock %}
+{% block contenido %}
+<h3 class="text-center mt-3 fw-bold">REGISTRO DE SOLICITUD</h3>
+<form action="/registrarSolicitud/" method="post" class="w-75 was-validated" style="margin: 0 auto">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="txtDescripcion" class="fw-bold">Descripción:</label>
+        <textarea name="txtDescripcion" rows="5" cols="10" id="" class="form-control"
+            placeholder="Haga una descripción de lo que le pasa al equipo" required></textarea>
+        </textarea>
+    </div>
+    <div class="mb-3">
+        <label for="cbOficinaAmbiente" class="fw-bold">Oficina-Ambiente:</label>
+        <select name="cbOficinaAmbiente" id="" class="form-select" required>
+            <option value="">Seleccione</option>
+            {%for ofi in oficinasAmbientes %}
+            <option value="{{ofi.id}}">{{ofi.ofiNombre}}</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div class="mb-3">
+        <button class="btn btn-success verdeSena">Registrar</button>
+        <button type="reset" class="btn btn-secondary">Cancelar</button>
+    </div>
+    <div>
+        {{mensaje}}
+    </div>
+</form>
+
+
+{%endblock %}
+{% block piePagina %}
+{% include "piePagina.html" %}
+{%endblock %}
