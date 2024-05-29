@@ -2,10 +2,14 @@
     <div class="container-fluid">
         <div class="dropdown">
             <a class="navbar-brand dropdown-toggle" href="#" data-bs-toggle="dropdown">
-
+                {% if user.userFoto != "" %}
+                    <img src="/media/{{user.userFoto}}" alt="Foto Usuario" style="width:40px;" class="rounded-pill"> 
+                {% else %}  
+                    <img src="/media/user-logo.png" alt="No foto" style="width:40px;" class="rounded-pill">
+                {% endif %}
             </a>
             <ul class="dropdown-menu" style="width:300px">
-                <li><span class="dropdown-item fw-bold"></span></li>
+                <li><span class="dropdown-item fw-bold">{{user.first_name}} {{user.last_name}}</span></li>
                 <li class="dropdown-item" style="margin-right: 20px; margin-top:2px">
                     <select id="cbRolMenu" name="cbRolMenu" class="form-select">
                         <option value="Administrador">Administrador</option>
@@ -33,7 +37,7 @@
                     <a class="nav-link" href="#">Gestionar Usuarios</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Gestionar Solicitudes</a>
+                    <a class="nav-link" href="/listarCasosParaAsignar/">Gestionar Solicitudes</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Reportes</a>

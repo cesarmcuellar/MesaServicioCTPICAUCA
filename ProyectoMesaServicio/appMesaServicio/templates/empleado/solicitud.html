@@ -29,7 +29,11 @@
         <button type="reset" class="btn btn-secondary">Cancelar</button>
     </div>
     <div>
-        {{mensaje}}
+        {% if mensaje %}
+        <script>
+            swal.fire("Registro de Solicitudes", '{{mensaje}}', 'info')
+        </script>
+        {%endif%}
     </div>
 </form>
 

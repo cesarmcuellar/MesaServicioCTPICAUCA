@@ -12,6 +12,8 @@ urlpatterns = [
     path('inicioEmpleado/', views.inicioEmpleado),
     path('vistaSolicitud/', views.vistaSolicitud),
     path('registrarSolicitud/', views.registrarSolicitud),
+    path('listarCasosParaAsignar/', views.listarCasos),
+    path('asignarTecnicoCaso/', views.asignarTecnicoCaso),
     path('salir/', views.salir),
 
 ]
