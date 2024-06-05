@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{%endblock %}
+{% block menu %}
+{% include "tecnico/menu.html" %}
+{%endblock %}
+{% block contenido %}
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/dataTables.buttons.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/3.0.1/js/buttons.print.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.2/css/dataTables.dataTables.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.1/css/buttons.dataTables.css">
+<h3 class="fw-bold text-center">LISTA DE CASOS ASIGNADOS</h3>
+<div class="table-responsive">
+    <table id="tblCasos" class="table table-bordered mt-3">
+        <thead>
+            <tr class="bg-secondary text-white">
+                <th>Empleado</th>
+                <th>Descripción</th>
+                <th>Oficina-Ambiente</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for caso in listaCasos %}
+            <tr>
+                <td>{{caso.casSolicitud.solUsuario.first_name}}
+                    {{caso.casSolicitud.solUsuario.last_name}}</td>
+                <td>{{caso.casSolicitud.solDescripcion}}</td>
+                <td>{{caso.casSolicitud.solOficinaAmbiente.ofiNombre}}</td>
+                <td>{{caso.casSolicitud.fechaHoraCreacion}}</td>
+                <td>{{caso.casEstado}}</td>
+                <td class="text-center fw-bold">
+                    <i id="btnAbrirModal" onclick="agregarIdCaso('{{caso.id}}')" data-bs-toggle="modal"
+                        data-bs-target="#modalSolucionCaso" class="fa fa-edit"></i>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="modalSolucionCaso">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Respuesta Solución Caso</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/solucionarCaso/" method="post">
+                <!-- Modal body -->
+                <div class="modal-body">
+
+                    {% csrf_token %}
+                    <div class="mt-3">
+                        <label for="txtProcedimiento" class="fw-bold">Procedimiento</label>
+                        <textarea name="txtProcedimiento" id="txtProcedimiento" cols="30" rows="10" class="form-control"
+                            required></textarea>
+                    </div>
+                    <div class="mt-3">
+                        <label for="cbTipoProcedimiento" class="fw-bold">Tipo Procedimiento</label>
+                        <select name="cbTipoProcedimiento" id="" class="form-select">
+                            <option value="">Seleccione</option>
+                            {% for tipo in listaTipoProcedimiento %}
+                            <option value="{{tipo.id}}">{{tipo.tipNombre}}</option>
+                            {%endfor %}
+                        </select>
+                    </div>
+                    <div class="mt-3">
+                        <label for="cbTipoSolucion" class="fw-bold">Tipo Solución</label>
+                        <select name="cbTipoSolucion" id="" class="form-select">
+                            <option value="">Seleccione</option>
+                            {% for tipo in listaTipoSolucion %}
+                            <option value="{{tipo.0}}">{{tipo.0}}</option>
+                            {%endfor %}
+                        </select>
+                    </div>
+                    <input type="hidden" name="idCaso" id="idCaso" value="">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Registrar</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    new DataTable('#tblCasos', {
+        layout: {
+            topStart: {
+                buttons: ['csv', 'excel', 'pdf']
+            }
+        }
+    });
+</script>
+{%endblock %}
+{% block piePagina %}
+{% include "piePagina.html" %}
+{%endblock %}

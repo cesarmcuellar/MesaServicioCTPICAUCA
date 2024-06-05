@@ -166,7 +166,7 @@ def enviarCorreo(asunto=None, mensaje=None, destinatario=None, archivo=None):
 def listarCasos(request):
     """_summary_
         obtiene los casos en estado solicitada
-        y los empleados técnicos para asignar a 
+        y los empleados técnicos para asignar a
         los casos.
     Args:
         request (_type_): _description_
@@ -236,6 +236,76 @@ def asignarTecnicoCaso(request):
         return redirect('/listarCasosParaAsignar/')
     else:
         mensaje = "Debe primero iniciar sesión"
+        return render(request, "frmIniciarSesion.html", {"mensaje": mensaje})
+
+
+def listarCasosAsignadosTecnico(request):
+    if request.user.is_authenticated:
+        try:
+            listaCasos = Caso.objects.filter(
+                casEstado='En Proceso', casUsuario=request.user)
+            listaTipoProcedimiento = TipoProcedimiento.objects.all().values()
+            mensaje = "Listado de casos asignados"
+        except Error as error:
+            mensaje = str(error)
+
+        retorno = {"mensaje": mensaje, "listaCasos": listaCasos,
+                   "listaTipoSolucion": tipoSolucion,
+                   "listaTipoProcedimiento": listaTipoProcedimiento
+                   }
+        return render(request, "tecnico/listarCasosAsignados.html", retorno)
+    else:
+        mensaje = "Debe iniciar sesión"
+        return render(request, "frmIniciarSesion.html", {"mensaje": mensaje})
+
+
+def solucionarCaso(request):
+    if request.user.is_authenticated:
+        try:
+            if transaction.atomic():
+                procedimiento = request.POST['txtProcedimiento']
+                tipoProc = int(request.POST['cbTipoProcedimiento'])
+                tipoProcedimiento = TipoProcedimiento.objects.get(pk=tipoProc)
+                tipoSolucion = request.POST['cbTipoSolucion']
+                idCaso = int(request.POST['idCaso'])
+                caso = Caso.objects.get(pk=idCaso)
+                solucionCaso = SolucionCaso(solCaso=caso,
+                                            solProcedimiento=procedimiento,
+                                            solTipoSolucion=tipoSolucion)
+                solucionCaso.save()
+                # actualizar estado de caso dependiendo del tipo de la solución
+                if (tipoSolucion == "Definitiva"):
+                    caso.casEstado = "Finalizada"
+                    caso.save()
+
+                # crear el obejto solucion tipo procedimiento
+                solucionCasoTipoProcedimiento = SolucionCasoTipoProcedimientos(
+                    solSolucionCaso=solucionCaso,
+                    solTipoProcedimiento=tipoProcedimiento
+                )
+                solucionCasoTipoProcedimiento.save()
+                # enviar correo al empleado que realizó la solicitud
+                solicitud = caso.casSolicitud
+                userEmpleado = solicitud.solUsuario
+                asunto = 'Solucion Caso - CTPI-CAUCA'
+                mensajeCorreo = f'Cordial saludo, <b>{userEmpleado.first_name} {userEmpleado.last_name}</b>, nos permitimos \
+                    informarle que se ha dado solución de tipo {tipoSolucion} al caso identificado con código:  \
+                    <b>{caso.casCodigo}</b>. Lo invitamos a revisar el equipo y verificar la solución. \
+                    <br><br>Para consultar en detalle la solución, ingresar al sistema para verificar las solicitudes \
+                    reportadas en la siguiente url: http://mesadeservicioctpicauca.sena.edu.co.'
+            # crear el hilo para el envío del correo
+            thread = threading.Thread(
+                target=enviarCorreo, args=(asunto, mensajeCorreo, [userEmpleado.email]))
+            # ejecutar el hilo
+            thread.start()
+            mensaje = "Solución  Caso"
+        except Error as error:
+            transaction.rollback()
+            mensaje = str(error)
+        retorno = {"mensaje": mensaje}
+        return redirect("/listarCasosAsignados/")
+    else:
+        mensaje = "Debe iniciar sesión"
         return render(request, "frmIniciarSesion.html", {"mensaje": mensaje})
 
 

@@ -155,7 +155,7 @@ GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf2r3coAAAAAIs4RnLRtXZRVnfG8KTazeauAr0v'
 
 # variables configuración correo
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'sucorreo'
-EMAIL_HOST_PASSWORD = '#######'
+EMAIL_HOST_USER = 'cesarmcuellar@gmail.com'
+EMAIL_HOST_PASSWORD = 'qkhnuljfuvjehbyg'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
