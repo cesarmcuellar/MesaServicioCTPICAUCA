@@ -20,6 +20,10 @@ urlpatterns = [
     path('vistaRegistrarUsuario/', views.vistaRegistrarUsuario),
     path('registrarUsuario/', views.registrarUsuario),
     path('recuperarClave/', views.recuperarClave),
+    path('reportesEstadisticos/', views.estadisticas),
+
+    path('pdfSolicitudes/', views.generarPdfSolicitudes),
+
     path('salir/', views.salir),
 
 ]

@@ -61,10 +61,10 @@ class Solicitud(models.Model):
     solOficinaAmbiente = models.ForeignKey(
         OficinaAmbiente, on_delete=models.PROTECT,
         db_comment="Hace referencia a la oficina o ambiente donde se encuentra el equipo de la solicitud")
-    fechaHoraCreacion = models.DateTimeField(auto_now_add=True,
-                                             db_comment="Fecha y hora del registro")
-    fechaHoraActualizacion = models.DateTimeField(auto_now=True,
-                                                  db_comment="Fecha y hora última actualización")
+    fechaHoraCreacion = models.DateField(auto_now_add=True,
+                                         db_comment="Fecha y hora del registro")
+    fechaHoraActualizacion = models.DateField(auto_now=True,
+                                              db_comment="Fecha y hora última actualización")
 
     def __str__(self) -> str:
         return self.solDescripcion

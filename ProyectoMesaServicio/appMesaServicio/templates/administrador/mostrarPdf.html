@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+{% block encabezado %}
+{% include "encabezado.html" %}
+{%endblock %}
+{% block menu %}
+{% include "administrador/menu.html" %}
+{%endblock %}
+{% block contenido %}
+<br>
+<h3 class="fw-bold text-center">REPORTES EN FORMATO PDF</h3>
+<ul>
+    <a href="/media/solicitudes.pdf/">
+        <li>Solicitudes</li>
+    </a>
+    <li>Otro</li>
+</ul>
+{%endblock %}
+{% block piePagina %}
+{% include "piePagina.html" %}
+{%endblock %}

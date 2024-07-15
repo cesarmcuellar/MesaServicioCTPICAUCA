@@ -3,18 +3,25 @@
         <div class="dropdown">
             <a class="navbar-brand dropdown-toggle" href="#" data-bs-toggle="dropdown">
                 {% if user.userFoto != "" %}
-                    <img src="/media/{{user.userFoto}}" alt="Foto Usuario" style="width:40px;" class="rounded-pill"> 
-                {% else %}  
-                    <img src="/media/user-logo.png" alt="No foto" style="width:40px;" class="rounded-pill">
+                <img src="/media/{{user.userFoto}}" alt="Foto Usuario" style="width:40px;" class="rounded-pill">
+                {% else %}
+                <img src="/media/user-logo.png" alt="No foto" style="width:40px;" class="rounded-pill">
                 {% endif %}
             </a>
             <ul class="dropdown-menu" style="width:300px">
                 <li><span class="dropdown-item fw-bold">{{user.first_name}} {{user.last_name}}</span></li>
                 <li class="dropdown-item" style="margin-right: 20px; margin-top:2px">
-                    <select id="cbRolMenu" name="cbRolMenu" class="form-select">
-                        <option value="Administrador">Administrador</option>
-                        <option value="Administrador">Técnico</option>
-                        <option value="Administrador">Empleado</option>
+                    <select id="cbRolMenu" name="cbRolMenu" class="form-select" onchange="cambiarRol()">
+                        <option value="" selected class="fw-bold">Seleccione su Rol</option>
+                        {% for group in request.user.groups.all %}
+                          {% if group.name == 'Administrador' %}
+                            <option value="Administrador">Administrador</option>
+                            <option value="Tecnico">Tecnico</option>
+                            <option value="Empleado" selected>Empleado</option>
+                          {% else %}
+                            <option value="{{group.name}}" selected>{{group.name}}</option>    
+                          {% endif%}          
+                        {% endfor %}
                     </select>
                 </li>
                 <li><a class="dropdown-item" href="/vistaGestionarCuenta/">Gestionar Tú Cuenta</a></li>
@@ -31,8 +38,14 @@
                     <a class="nav-link" href="/inicioEmpleado/">Inicio</a>
                 </li>               
                 <li class="nav-item">
-                    <a class="nav-link" href="/vistaSolicitud/">Gestionar Solicitudes</a>
+                    <a class="nav-link" href="/vistaSolicitud/">Mis Solicitudes</a>
                 </li>                
+            </ul>
+            <ul class="navbar-nav" style="margin-left:auto">
+                <li class="nav-item">
+                    <img src="/media/iconosoporte.jpg" style="width:40px;" class="rounded-pill">
+                </li>
+
             </ul>
         </div>
     </div>

@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-9!kd7#8isuwp^25a3+wtheraq3k))$u-p&54fbo+x6eq+yx0%3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -40,9 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'appMesaServicio',
     'bootstrap5',
+    'rest_framework',
+    'corsheaders',
+    'coreapi',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -89,13 +94,15 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
     },
-    'mongo': {
-        'ENGINE': 'djongo',
-        'NAME': 'MESASERVICIO',
-        'CLIENT': {
-            'host': "aquí su cadena de conexión"
-        }
-    },
+
+    # 'mongo': {
+    #     'ENGINE': 'djongo',
+    #     'NAME': 'MESASERVICIO',
+    #     'CLIENT': {
+    #         'host': "aquí su cadena de conexión"
+    #     }
+    # },
+
 
 }
 
@@ -159,3 +166,8 @@ EMAIL_HOST_USER = 'cesarmcuellar@gmail.com'
 EMAIL_HOST_PASSWORD = 'qkhnuljfuvjehbyg'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+
+# documentar api
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+}

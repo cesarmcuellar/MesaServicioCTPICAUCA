@@ -18,6 +18,21 @@ import string
 # importar el modelo Group - Roles
 from django.contrib.auth.models import Group
 
+# api rest_framework
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from appMesaServicio.serializers import OficinaAmbienteSerializer, UserSerializer
+
+# graficos estadisticos
+from django.db.models import Count
+import matplotlib.pyplot as plt
+import os
+from django.db.models.functions import ExtractMonth
+import calendar
+
 
 # Create your views here.
 
@@ -447,3 +462,129 @@ def salir(request):
     auth.logout(request)
     return render(request, "frmIniciarSesion.html",
                   {"mensaje": "Ha cerrado la sesión"})
+
+# reportes gráficos
+
+
+def estadisticas(request):
+    import matplotlib
+    if request.user.is_authenticated:
+        matplotlib.use('agg')
+        listaAmbientes = OficinaAmbiente.objects.all()
+        listaSolicitudes = Solicitud.objects.all()
+
+        # grafico cantidad solicitudes por ambiente
+        solicitudesPorAmbiente = Solicitud.objects.values('solOficinaAmbiente')\
+            .annotate(cantidad=Count('id'))
+        xAmbiente = []
+        yCantidadAmbiente = []
+        for ambiente in listaAmbientes:
+            for solicitud in listaSolicitudes:
+                if ambiente.id == solicitud.solOficinaAmbiente.id:
+                    xAmbiente.append(ambiente)
+                    yCantidadAmbiente.append(0)
+                    break
+        i = 0
+        colores = []
+        for ambiente in xAmbiente:
+            for solicitud in listaSolicitudes:
+                if ambiente.id == solicitud.solOficinaAmbiente.id:
+                    yCantidadAmbiente[i] += 1
+                    color = "#" + \
+                        ''.join([random.choice('0123456789ABCDEF')
+                                for j in range(6)])
+                    colores.append(color)
+            i += 1
+        textprops = {"fontsize": 6}
+        plt.title("Cantidad de Solicitudes Realizadas \n por Ambiente")
+        plt.pie(yCantidadAmbiente, labels=xAmbiente,
+                autopct="%0.1f %%", textprops=textprops, colors=colores)
+        rutaImagen = os.path.join(settings.MEDIA_ROOT + "\\" + "grafica1.png")
+        plt.savefig(rutaImagen)
+        plt.close()
+
+        # grafica cantidad solicitudes por mes
+        solicitudesPorMes = Solicitud.objects.values(mes=ExtractMonth('fechaHoraCreacion'))\
+            .annotate(cantidad=Count('id'))
+        yCantidadMes = []
+        meses = []
+        textoMes = ['Enero', 'Febrero', 'Marzo',
+                    'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto']
+        colores = []
+        for solicitud in solicitudesPorMes:
+            # meses.append(calendar.month_name[solicitud['mes']])
+            meses.append(textoMes[solicitud['mes']-1])
+            yCantidadMes.append(solicitud['cantidad'])
+            color = "#" + \
+                ''.join([random.choice('0123456789ABCDEF')
+                         for j in range(6)])
+            colores.append(color)
+
+        textprops = {"fontsize": 10}
+        plt.title("Cantidad de Solicitudes Realizadas \n por Mes")
+        plt.bar(meses, yCantidadMes, color=colores)
+        rutaImagen = os.path.join(settings.MEDIA_ROOT + "\\" + "grafica2.png")
+        plt.savefig(rutaImagen)
+        plt.close()
+
+        # grafico cantidad de casos atentidos por tipo
+        '''
+        casosPorTipo = SolucionCasoTipoProcedimientos.objects.values(tipo='solTipoProcedimiento__tipNombre')\
+            .annotate(cantidad=Count('solSolucionCaso__id'))
+
+        yCantidadCasosTipo = []
+        tiposProcedimientos = []
+
+        tipos = TipoProcedimiento.objects.all()
+        for tipo in tipos:
+            tiposProcedimientos.append(tipo)
+            yCantidadCasosTipo.append(0)
+
+        i = 0
+        for caso in casosPorTipo:
+            for tipo in tipos:
+                if caso['tipo'] == tipo.tipNombre:
+                    yCantidadCasosTipo[i] += 1
+                    color = "#" + \
+                        ''.join([random.choice('0123456789ABCDEF')
+                                for j in range(6)])
+                    colores.append(color)
+            i += 1
+
+        textprops = {"fontsize": 6}
+        plt.title("Cantidad de Casos Atendidos \n por Tipo Procedimiento")
+        plt.bar(tiposProcedimientos, yCantidadCasosTipo, color=colores)
+        rutaImagen = os.path.join(settings.MEDIA_ROOT + "\\" + "grafica3.png")
+        plt.savefig(rutaImagen)
+        plt.close()
+        '''
+        # generarPdfDevoluciones(meses, yCantidadMes)
+        return render(request, "administrador/reportesEstadisticos.html")
+
+    else:
+        mensaje = "Debe iniciar sesión"
+        return render(request, "frmIniciarSesion.html", {"mensaje": mensaje})
+        # acceso a la API
+
+
+def generarPdfSolicitudes(request):
+    # importamos el archivo que puede generar el pdf
+    from appMesaServicio.pdfSolicitudes import Pdf
+    # obtenemos los datos de las solicitudes
+    solicitudes = Solicitud.objects.all()
+    # crear un objeto de tipo Pdf que viene de la clase
+    # creada en el archivo pdfSolicitudes.py
+    doc = Pdf()
+    # permite colocar número de página en el pdf
+    doc.alias_nb_pages()
+    # agrega una pagpina
+    doc.add_page()
+    # configura letra negrilla tamaño 12
+    doc.set_font("Arial", "B", 12)
+    # se llama al método mostrarDatos del objeto y se le
+    # pasan las solicitudes
+    doc.mostrarDatos(solicitudes)
+    # exporta el pdf y lo guarda en la carpeta media
+    doc.output(f'media/solicitudes.pdf')
+    # retorna a un html para mostrarlo
+    return render(request, "administrador/mostrarPdf.html")
