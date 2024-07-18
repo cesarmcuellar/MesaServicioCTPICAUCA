@@ -87,15 +87,9 @@
         </div>
     </div>
 </div>
-
 <script>
-    new DataTable('#tblCasos', {
-        layout: {
-            topStart: {
-                buttons: ['csv', 'excel', 'pdf']
-            }
-        }
-    });
+    tabla = document.getElementById("tblCasos")
+    cargarDataTable($("#tblCasos"), "SOLICITUDES POR ASIGNAR", 4);
 </script>
 {%endblock %}
 {% block piePagina %}

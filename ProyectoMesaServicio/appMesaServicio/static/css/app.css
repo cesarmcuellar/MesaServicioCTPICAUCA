@@ -33,3 +33,8 @@ footer {
 .textoPiePagina {
     font-size: 2vh;
 }
+
+.selectTable {
+    height: 40px;
+    float: right;
+}
