@@ -5,7 +5,7 @@ set -o errexit
 pip install -r requirements.txt
 
 # Convert static asset files
-python ./ProyedctoMesaServicio/manage.py collectstatic --no-input
+python ./ProyectoMesaServicio/manage.py collectstatic --no-input
 
 # Apply any outstanding database migrations
-python ./ProyedctoMesaServicio/manage.py migrate
+python ./ProyectoMesaServicio/manage.py migrate
